@@ -1,7 +1,7 @@
 int cols, rows;
 int scl = 20;
 int w = 2000;
-int h = 1600;
+int h = 2000;
 float flying = 0;
 
 int redBase = 214;
@@ -22,7 +22,7 @@ float maxSpeed = 0.2;
 float minSpeed = 0.0000001;
 boolean incrementing = false;
 
-int terrainHeight = 125; // change this with pot
+int terrainHeight = 35; // change this with pot
 int minTerrainHeight = 0; 
 int maxTerrainHeight = 125;
 
@@ -55,12 +55,15 @@ void draw() {
   //stroke(0xff);
   noFill();
   
-  translate(width/2,height/2+50);
+  translate(width/2,height/2+(height/8));
   rotateX(PI/3);
   translate(-w/2,-h/2);
   
+  int alpha = 0;
+  int alphaIncrementer = (255 - alpha) / (int)((float)rows/1.5); 
   for (int y = 0; y < rows-1; y++) {
     beginShape(TRIANGLE_STRIP);
+    //println("Alpha: " + alpha);
     for (int x = 0; x < cols; x++) {
       float terrainFirst = terrain[x][y];
       float terrainSecond = terrain[x][y + 1];
@@ -70,7 +73,7 @@ void draw() {
         int green = greenBase + (int)((float)(255-greenBase) * ratio);
         
       if (terrainFirst >= 0) {
-        stroke(color(red,green,255));
+        stroke(color(red,green,255, alpha));
       } else {
         //float ratio = (Math.abs(terrainFirst/(terrainHeight-(terrainHeight/2))));
         //int blue = (int)((float)255 * ratio);
@@ -78,19 +81,14 @@ void draw() {
         int darkRed = redBase - (int)(redBase * ratio);
         int darkBlue = 255 - (int)(255 * ratio);
         int darkGreen = greenBase - (int)(greenBase * ratio);
-        stroke(color(darkRed,darkGreen,darkBlue));
+        stroke(color(darkRed,darkGreen,darkBlue, alpha));
       }
-      //if (terrainFirst < -terrainHeight/2) {
-      //  stroke(color(52, 64, 61));
-      //} else if (terrainFirst < 0) {
-      //  stroke(color(102, 112, 110));
-      //} else if (terrainFirst < terrainHeight/2) {
-      //  stroke(color(113, 163, 154));
-      //} else {
-      //  stroke(color(212, 255, 244));
-      //}
       vertex(x*scl, y*scl, terrainFirst);
       vertex(x*scl, (y+1)*scl, terrainSecond);
+    }
+    alpha += alphaIncrementer;
+    if (alpha > 255) {
+      alpha = 255;
     }
     endShape();
   }
