@@ -22,7 +22,9 @@ float maxSpeed = 0.2;
 float minSpeed = 0.0000001;
 boolean incrementing = false;
 
-int terrainHeight = 125;
+int terrainHeight = 125; // change this with pot
+int minTerrainHeight = 0; 
+int maxTerrainHeight = 125;
 
 void draw() {
   flying -= speed;
@@ -63,7 +65,7 @@ void draw() {
       float terrainFirst = terrain[x][y];
       float terrainSecond = terrain[x][y + 1];
       
-        float ratio = Math.abs(terrainFirst/(terrainHeight-(terrainHeight/2)));
+        float ratio = Math.abs(terrainFirst/(maxTerrainHeight-(maxTerrainHeight/2)));
         int red = redBase + (int)((float)(255-redBase) * ratio);
         int green = greenBase + (int)((float)(255-greenBase) * ratio);
         
