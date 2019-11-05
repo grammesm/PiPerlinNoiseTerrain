@@ -1,44 +1,87 @@
+import processing.io.*;
+
+// Display setup
 int cols, rows;
-int scl = 20;
-int w = 2000;
-int h = 2000;
+int scl = 10;
+int w = 400;
+int h = 200;
 float flying = 0;
 
+// Color vars
 int redBase = 214;
 int greenBase = 66;
 
+// Terrain map
 float[][] terrain;
 
-void setup() {
-  size (600,600,P3D);
-  cols = w / scl;
-  rows = h / scl;
-  terrain = new float[cols][rows];
-}
-
-float speed = 0; // change this with pot
-float speedIncrementer = 0.0005;
-float maxSpeed = 0.2;
-float minSpeed = 0.0000001;
-boolean incrementing = false;
-
-int terrainHeight = 35; // change this with pot
+// Terrain height related
+int terrainHeight = 0; // change this with pot
 int minTerrainHeight = 0; 
 int maxTerrainHeight = 125;
 
-void draw() {
-  flying -= speed;
-  if (incrementing) {
-    speed += speedIncrementer;
-    if (speed > maxSpeed) {
-      incrementing = false;
+// Speed related
+float speedIncrementer = .005;
+float maxSpeed = 0.2;
+float minSpeed = 0.01;//01;
+float speed = minSpeed; // change this with pot
+
+// GPIO pins
+final int heightClkPin = 22;
+final int heightDtPin = 27;
+final int speedClkPin = 24;
+final int speedDtPin = 23;
+
+void setup() {
+  // Height DT setup
+  GPIO.pinMode(heightDtPin, GPIO.INPUT_PULLUP);
+  // Height CLK setup
+  GPIO.pinMode(heightClkPin, GPIO.INPUT_PULLUP);
+  GPIO.attachInterrupt(heightClkPin, this, "clkChangeHeight", GPIO.CHANGE);
+  
+  // Speed DT setup
+  GPIO.pinMode(speedDtPin, GPIO.INPUT_PULLUP);
+  // Speed CLK setup
+  GPIO.pinMode(speedClkPin, GPIO.INPUT_PULLUP);
+  GPIO.attachInterrupt(speedClkPin, this, "clkChangeSpeed", GPIO.CHANGE);
+  
+  // Setup screen
+  size (200,200,P3D);
+  cols = w / scl;
+  rows = h / scl;
+  terrain = new float[cols][rows];
+  frameRate(120);
+}
+
+void clkChangeHeight(int pin){
+  if (GPIO.digitalRead(heightDtPin) != GPIO.digitalRead(heightClkPin)) {
+    terrainHeight+=2;
+    if (terrainHeight > maxTerrainHeight) {
+      terrainHeight = maxTerrainHeight;
     }
   } else {
-    speed -= speedIncrementer;
-    if (speed < minSpeed) {
-      incrementing = true;
+    terrainHeight-=2;
+    if (terrainHeight < minTerrainHeight) {
+      terrainHeight = minTerrainHeight;
     }
-  }
+  }    
+}
+
+void clkChangeSpeed(int pin){
+  if (GPIO.digitalRead(speedDtPin) != GPIO.digitalRead(speedClkPin)) {
+    speed+=speedIncrementer;
+    if (speed > maxSpeed) {
+      speed = maxSpeed;
+    }
+  } else {
+    speed-=speedIncrementer;
+    if (speed < minSpeed) {
+      speed = minSpeed;
+    }
+  }    
+}
+
+void draw() {
+  flying -= speed;
 
   float yoff = flying;
   for (int y = 0; y < rows; y++) {
@@ -52,7 +95,6 @@ void draw() {
 
   
   background(color(0, 0, 54));
-  //stroke(0xff);
   noFill();
   
   translate(width/2,height/2+(height/8));
@@ -75,9 +117,6 @@ void draw() {
       if (terrainFirst >= 0) {
         stroke(color(red,green,255, alpha));
       } else {
-        //float ratio = (Math.abs(terrainFirst/(terrainHeight-(terrainHeight/2))));
-        //int blue = (int)((float)255 * ratio);
-        //int green = (int)((float)255 * (1.0-ratio));
         int darkRed = redBase - (int)(redBase * ratio);
         int darkBlue = 255 - (int)(255 * ratio);
         int darkGreen = greenBase - (int)(greenBase * ratio);
