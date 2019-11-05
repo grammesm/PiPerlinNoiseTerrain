@@ -2,9 +2,9 @@ import processing.io.*;
 
 // Display setup
 int cols, rows;
-int scl = 10;
-int w = 400;
-int h = 200;
+int scl = 30;
+int w = 1000;
+int h = 600;
 float flying = 0;
 
 // Color vars
@@ -17,7 +17,7 @@ float[][] terrain;
 // Terrain height related
 int terrainHeight = 0; // change this with pot
 int minTerrainHeight = 0; 
-int maxTerrainHeight = 125;
+int maxTerrainHeight = 200;
 
 // Speed related
 float speedIncrementer = .005;
@@ -45,7 +45,7 @@ void setup() {
   GPIO.attachInterrupt(speedClkPin, this, "clkChangeSpeed", GPIO.CHANGE);
   
   // Setup screen
-  size (200,200,P3D);
+  size (800,600,P3D);
   cols = w / scl;
   rows = h / scl;
   terrain = new float[cols][rows];
