@@ -3,7 +3,7 @@ import processing.io.*;
 // Display setup
 int cols, rows;
 int scl = 30;
-int w = 1000;
+int w = 1400;
 int h = 600;
 float flying = 0;
 
@@ -45,7 +45,8 @@ void setup() {
   GPIO.attachInterrupt(speedClkPin, this, "clkChangeSpeed", GPIO.CHANGE);
   
   // Setup screen
-  size (800,600,P3D);
+  fullScreen(P3D);
+  //size (800,480,P3D);
   cols = w / scl;
   rows = h / scl;
   terrain = new float[cols][rows];
