@@ -32,6 +32,8 @@ final int speedClkPin = 24;
 final int speedDtPin = 23;
 
 void setup() {
+  noCursor();
+  
   // Height DT setup
   GPIO.pinMode(heightDtPin, GPIO.INPUT_PULLUP);
   // Height CLK setup
